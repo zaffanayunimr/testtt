@@ -1,4 +1,6 @@
+
 document.addEventListener("DOMContentLoaded", () => {
+
     // ==========================================
     // 1. DOM ELEMENT SELECTION
     // ==========================================
@@ -7,13 +9,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const video1 = document.getElementById("videoPlayer1");
     const video2 = document.getElementById("videoPlayer2");
-    
-    // Overlays
+
     const langOverlay = document.getElementById("language-overlay");
     const scene4Overlay = document.getElementById("scene4-overlay");
     const settingsOverlay = document.getElementById("settings-overlay");
 
-    // Navigation Buttons
     const btnBm = document.getElementById("btn-bm");
     const btnEn = document.getElementById("btn-en");
     const skipBtn = document.getElementById("skip-btn");
@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const homeBtn = document.getElementById("home-btn");
     const backBtn = document.getElementById("back-btn");
 
-    // Settings UI Text
     const settingsTitle = document.getElementById("settings-title");
     const labelAudio = document.getElementById("label-audio");
     const labelLanguage = document.getElementById("label-language");
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const textLangBm = document.getElementById("text-lang-bm");
     const textLangEn = document.getElementById("text-lang-en");
 
-    // Volume Controls
     const volumeSlider = document.getElementById("volume-slider");
     const volumePercentage = document.getElementById("volume-percentage");
     const btnVolumeUp = document.getElementById("btn-volume-up");
@@ -44,72 +42,163 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnSetEn = document.getElementById("btn-set-en");
 
     // ==========================================
-    // 2. STATE MANAGEMENT & BGM SETUP
+    // 2. STATE MANAGEMENT
     // ==========================================
     let selectedLang = "ms";
     let introAudio = null;
     let previousScene = "scene4";
 
-    // Cipta BGM & Tetapkan Ulang (Looping Continuous)
+    // ==========================================
+    // 3. BACKGROUND MUSIC
+    // ==========================================
     const bgMusic = new Audio("assets/bgm.mp3");
+
     bgMusic.loop = true;
     bgMusic.volume = volumeSlider.value / 100;
 
+    bgMusic.addEventListener("error", () => {
+        console.error("BGM gagal dimuatkan:", bgMusic.error);
+    });
+
+    // ==========================================
+    // 4. VIDEO SETUP
+    // ==========================================
+
+    // Relative path sesuai untuk GitHub Pages
+    video1.src = "assets/Comp1.mp4";
+    video1.preload = "auto";
+    video1.playsInline = true;
+
+    video2.preload = "auto";
+    video2.playsInline = true;
+
+    // Elakkan bunyi video bercampur dengan BGM
+    video1.muted = true;
+    video2.muted = true;
+
+    video1.load();
     video2.load();
 
+    video1.addEventListener("error", () => {
+        console.error(
+            "Comp1.mp4 gagal dimuatkan.",
+            video1.error,
+            video1.currentSrc
+        );
+    });
+
+    video2.addEventListener("error", () => {
+        console.error(
+            "Video kedua gagal dimuatkan.",
+            video2.error,
+            video2.currentSrc
+        );
+    });
+
     // ==========================================
-    // 3. START BUTTON: PLAY BGM & COMP1 SERENTAK
+    // 5. START BUTTON - SCENE 1
     // ==========================================
-    startAppBtn.addEventListener("click", () => {
-        // Sembunyikan Overlay
+    startAppBtn.addEventListener("click", async () => {
+
+        console.log("Start button clicked!");
+
         startOverlay.style.display = "none";
 
-        // MULA BGM DENGAN SEGERA DARI AWAL
-        bgMusic.play().then(() => {
-            console.log("BGM berjaya dimainkan dari Scene 1!");
-        }).catch(err => console.error("Error playing BGM:", err));
+        video1.classList.add("active");
 
-        // Mula mainkan video comp1
-        video1.play().catch(err => console.error("Error playing video 1:", err));
+        video1.pause();
+        video1.currentTime = 0;
+
+        // Mainkan BGM
+        bgMusic.play().catch(err => {
+            console.error("BGM playback error:", err);
+        });
+
+        // Mainkan Comp1.mp4
+        try {
+            await video1.play();
+            console.log("Comp1.mp4 berjaya dimainkan!");
+        } catch (err) {
+            console.error("Comp1.mp4 playback error:", err);
+
+            alert(
+                "Video pertama gagal dimainkan. " +
+                "Sila semak Console browser. " +
+                "Error: " + err.message
+            );
+        }
     });
 
+    // ==========================================
+    // 6. VIDEO 1 ENDED
+    // ==========================================
     video1.addEventListener("ended", () => {
+
+        video1.pause();
         video1.classList.remove("active");
+
         langOverlay.style.display = "flex";
+
+        console.log("Scene 1 completed.");
     });
 
-    // Control Volume
-// Control Volume & Dynamic Track Color Gradient
-function setVolume(val) {
-    let clampedVal = Math.max(0, Math.min(100, val));
-    
-    volumeSlider.value = clampedVal;
-    volumePercentage.textContent = clampedVal + "%";
+    // ==========================================
+    // 7. VOLUME CONTROLS
+    // ==========================================
+    function setVolume(val) {
 
-    // Tukar warna trek: Kiri (Pekat), Kanan (Cair)
-    let percent = clampedVal;
-    volumeSlider.style.background = `linear-gradient(to right, #E70B90 ${percent}%, #FFCCE5 ${percent}%)`;
+        const clampedVal = Math.max(
+            0,
+            Math.min(100, Number(val))
+        );
 
-    if (bgMusic) {
+        volumeSlider.value = clampedVal;
+        volumePercentage.textContent = clampedVal + "%";
+
+        volumeSlider.style.background =
+            `linear-gradient(
+                to right,
+                #E70B90 ${clampedVal}%,
+                #FFCCE5 ${clampedVal}%
+            )`;
+
         bgMusic.volume = clampedVal / 100;
     }
-}
 
-// Inisialisasi warna trek semasa dimuatkan
-setVolume(volumeSlider.value);
+    setVolume(volumeSlider.value);
 
-    volumeSlider.addEventListener("input", (e) => setVolume(e.target.value));
-    btnVolumeUp.addEventListener("click", () => setVolume(parseInt(volumeSlider.value) + 10));
-    btnVolumeDown.addEventListener("click", () => setVolume(parseInt(volumeSlider.value) - 10));
-    btnMute.addEventListener("click", () => setVolume(0));
+    volumeSlider.addEventListener("input", (e) => {
+        setVolume(e.target.value);
+    });
+
+    btnVolumeUp.addEventListener("click", () => {
+        setVolume(Number(volumeSlider.value) + 10);
+    });
+
+    btnVolumeDown.addEventListener("click", () => {
+        setVolume(Number(volumeSlider.value) - 10);
+    });
+
+    btnMute.addEventListener("click", () => {
+        setVolume(0);
+    });
 
     // ==========================================
-    // 4. SCENE 2 & INTRO VIDEO FLOW
+    // 8. LANGUAGE SELECTION
     // ==========================================
-    btnBm.addEventListener("click", () => startIntroScene("ms"));
-    btnEn.addEventListener("click", () => startIntroScene("en"));
+    btnBm.addEventListener("click", () => {
+        startIntroScene("ms");
+    });
 
-    function startIntroScene(lang) {
+    btnEn.addEventListener("click", () => {
+        startIntroScene("en");
+    });
+
+    // ==========================================
+    // 9. SCENE 2 - INTRO VIDEO
+    // ==========================================
+    async function startIntroScene(lang) {
+
         selectedLang = lang;
         updateLocalizationUI();
 
@@ -118,31 +207,40 @@ setVolume(volumeSlider.value);
 
         stopIntroAudio();
 
-        const audioFile = (selectedLang === "en") ? "assets/intro eng.mp3" : "assets/intro.mp3";
+        const audioFile = selectedLang === "en"
+            ? "assets/intro eng.mp3"
+            : "assets/intro.mp3";
+
         introAudio = new Audio(audioFile);
 
+        video2.pause();
         video2.currentTime = 0;
         introAudio.currentTime = 0;
 
         video2.classList.add("active");
 
-        introAudio.addEventListener("canplaythrough", () => {
-            video2.currentTime = 0;
-            introAudio.currentTime = 0;
-
-            Promise.all([
+        try {
+            await Promise.all([
                 video2.play(),
                 introAudio.play()
-            ]).catch(err => console.error("Sync error:", err));
-        }, { once: true });
+            ]);
 
-        introAudio.load();
+            console.log("Intro video and audio playing.");
+
+        } catch (err) {
+            console.error("Intro playback error:", err);
+        }
     }
 
+    // ==========================================
+    // 10. SCENE 2 ENDED / SKIP
+    // ==========================================
     video2.addEventListener("ended", goToScene4);
+
     skipBtn.addEventListener("click", goToScene4);
 
     function stopIntroAudio() {
+
         if (introAudio) {
             introAudio.pause();
             introAudio = null;
@@ -150,70 +248,100 @@ setVolume(volumeSlider.value);
     }
 
     // ==========================================
-    // 5. SCENE 4 & SETTINGS NAVIGATION
+    // 11. SCENE 4
     // ==========================================
     function goToScene4() {
+
         stopIntroAudio();
+
         video2.pause();
         video2.classList.remove("active");
+
         skipBtn.style.display = "none";
 
         updateLocalizationUI();
+
         scene4Overlay.style.display = "flex";
     }
 
+    // ==========================================
+    // 12. SETTINGS NAVIGATION
+    // ==========================================
     settingsBtn.addEventListener("click", () => {
+
         previousScene = "scene4";
+
         scene4Overlay.style.display = "none";
         settingsOverlay.style.display = "flex";
     });
 
     backBtn.addEventListener("click", () => {
+
         settingsOverlay.style.display = "none";
+
         if (previousScene === "scene4" || !previousScene) {
             scene4Overlay.style.display = "flex";
         }
     });
 
     homeBtn.addEventListener("click", () => {
+
         settingsOverlay.style.display = "none";
         scene4Overlay.style.display = "flex";
     });
 
+    // ==========================================
+    // 13. SETTINGS LANGUAGE
+    // ==========================================
     btnSetBm.addEventListener("click", () => {
+
         selectedLang = "ms";
         updateLocalizationUI();
     });
 
     btnSetEn.addEventListener("click", () => {
+
         selectedLang = "en";
         updateLocalizationUI();
     });
 
+    // ==========================================
+    // 14. LOCALIZATION UI
+    // ==========================================
     function updateLocalizationUI() {
+
         if (selectedLang === "en") {
+
             settingsTitle.textContent = "Setting";
             labelAudio.textContent = "Sound";
             labelLanguage.textContent = "Language";
+
             textVolumeUp.textContent = "Volume Up";
             textVolumeDown.textContent = "Volume Down";
             textMute.textContent = "Mute";
+
             textLangBm.textContent = "Malay";
             textLangEn.textContent = "English";
+
             backBtn.textContent = "Back";
 
             btnChapter.textContent = "Chapter";
             btnQuiz.textContent = "Quiz";
             skipBtn.textContent = "Skip";
+
         } else {
+
             settingsTitle.textContent = "Tetapan";
             labelAudio.textContent = "Audio";
             labelLanguage.textContent = "Bahasa";
+
             textVolumeUp.textContent = "Kuatkan";
             textVolumeDown.textContent = "Perlahankan";
             textMute.textContent = "Senyap";
+
             textLangBm.textContent = "Bahasa Melayu";
             textLangEn.textContent = "Bahasa Inggeris";
+
             backBtn.textContent = "Kembali";
 
             btnChapter.textContent = "Bab";
@@ -221,4 +349,7 @@ setVolume(volumeSlider.value);
             skipBtn.textContent = "Langkau";
         }
     }
+
+    updateLocalizationUI();
+
 });
