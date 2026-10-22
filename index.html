@@ -1,147 +1,346 @@
-<!DOCTYPE html>
-<html lang="ms">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flow With Confidence</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
 
-    <div id="player-container">
-        <!-- 0. Start Overlay Screen (Untuk Play BGM & Video Terus Dari Awal) -->
-        <div id="start-overlay">
-            <button id="start-app-btn">MULA / START</button>
-        </div>
+document.addEventListener("DOMContentLoaded", () => {
 
-        <!-- Scene 1: Logo Video -->
-        <video id="videoPlayer1" class="video-layer active" playsinline muted>
-            <source src="assets/comp1.mp4" type="video/mp4">
-            Browser anda tidak menyokong tag video.
-        </video>
+    // ==========================================
+    // 1. DOM ELEMENT SELECTION
+    // ==========================================
+    const startOverlay = document.getElementById("start-overlay");
+    const startAppBtn = document.getElementById("start-app-btn");
 
-        <!-- Scene 2: Language Selection Overlay -->
-        <div id="language-overlay">
-            <button class="lang-btn" id="btn-bm">BAHASA MELAYU</button>
-            <button class="lang-btn" id="btn-en">ENGLISH</button>
-            
-            <div class="footer-logo">
-                <div class="footer-title">FLOW WITH</div>
-                <div class="footer-subtitle">Confidence</div>
-            </div>
-        </div>
+    const video1 = document.getElementById("videoPlayer1");
+    const video2 = document.getElementById("videoPlayer2");
 
-        <!-- Scene 3: Intro Video -->
-        <video id="videoPlayer2" class="video-layer" playsinline muted>
-            <source src="assets/full-intro.mp4" type="video/mp4">
-        </video>
+    const langOverlay = document.getElementById("language-overlay");
+    const scene4Overlay = document.getElementById("scene4-overlay");
+    const settingsOverlay = document.getElementById("settings-overlay");
 
-        <!-- Skip / Langkau Button -->
-        <button id="skip-btn">Langkau</button>
+    const btnBm = document.getElementById("btn-bm");
+    const btnEn = document.getElementById("btn-en");
+    const skipBtn = document.getElementById("skip-btn");
+    const btnChapter = document.getElementById("btn-chapter");
+    const btnQuiz = document.getElementById("btn-quiz");
+    const settingsBtn = document.getElementById("settings-btn");
+    const homeBtn = document.getElementById("home-btn");
+    const backBtn = document.getElementById("back-btn");
 
-        <!-- Scene 4: Main Menu Overlay -->
-        <div id="scene4-overlay">
-            <button id="settings-btn" aria-label="Settings">
-                <svg class="gear-icon" viewBox="0 0 24 24">
-                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-                </svg>
-            </button>
+    const settingsTitle = document.getElementById("settings-title");
+    const labelAudio = document.getElementById("label-audio");
+    const labelLanguage = document.getElementById("label-language");
+    const textVolumeUp = document.getElementById("text-volume-up");
+    const textVolumeDown = document.getElementById("text-volume-down");
+    const textMute = document.getElementById("text-mute");
+    const textLangBm = document.getElementById("text-lang-bm");
+    const textLangEn = document.getElementById("text-lang-en");
 
-            <div class="menu-header">
-                <h1 class="menu-title">FLOW WITH</h1>
-                <h2 class="menu-subtitle">Confidence</h2>
-            </div>
+    const volumeSlider = document.getElementById("volume-slider");
+    const volumePercentage = document.getElementById("volume-percentage");
+    const btnVolumeUp = document.getElementById("btn-volume-up");
+    const btnVolumeDown = document.getElementById("btn-volume-down");
+    const btnMute = document.getElementById("btn-mute");
 
-            <div class="menu-buttons-container">
-                <button class="menu-btn" id="btn-chapter">Bab</button>
-                <button class="menu-btn" id="btn-quiz">Kuiz</button>
-            </div>
-        </div>
+    const btnSetBm = document.getElementById("btn-set-bm");
+    const btnSetEn = document.getElementById("btn-set-en");
 
-       <!-- Scene 5: Settings Overlay Screen -->
-<div id="settings-overlay">
-    <h1 id="settings-title">Tetapan</h1>
+    // ==========================================
+    // 2. STATE MANAGEMENT
+    // ==========================================
+    let selectedLang = "ms";
+    let introAudio = null;
+    let previousScene = "scene4";
 
-    <!-- Left Home Button -->
-    <button id="home-btn" aria-label="Home">
-        <svg viewBox="0 0 24 24">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-        </svg>
-    </button>
+    // ==========================================
+    // 3. BACKGROUND MUSIC
+    // ==========================================
+    const bgMusic = new Audio("bgm.mp3");
 
-    <!-- Main Content Grid -->
-    <div class="settings-grid">
-        <!-- Left Box: Audio Controls -->
-        <div class="settings-box">
-            <div class="box-header-badge header-audio">
-                <span id="label-audio">Audio</span>
-            </div>
+    bgMusic.loop = true;
+    bgMusic.volume = volumeSlider.value / 100;
 
-            <div class="audio-control-body">
-                <!-- Custom Vertical Slider Track -->
-                <div class="volume-slider-container">
-                    <input type="range" id="volume-slider" min="0" max="100" value="100">
-                    <span id="volume-percentage">100%</span>
-                </div>
+    bgMusic.addEventListener("error", () => {
+        console.error("BGM loading error:", bgMusic.error);
+    });
 
-                <div class="audio-btn-group">
-                    <button class="settings-action-btn" id="btn-volume-up">
-                        <span class="btn-icon">🔊</span>
-                        <span id="text-volume-up">Kuatkan</span>
-                    </button>
+    // ==========================================
+    // 4. VIDEO SETUP
+    // ==========================================
+    // Path ikut susunan file GitHub (root folder)
 
-                    <button class="settings-action-btn" id="btn-volume-down">
-                        <span class="btn-icon">🔉</span>
-                        <span id="text-volume-down">Perlahankan</span>
-                    </button>
+    video1.src = "Comp1.mp4";
+    video2.src = "full-intro.mp4";
 
-                    <button class="settings-action-btn" id="btn-mute">
-                        <span class="btn-icon">🔇</span>
-                        <span id="text-mute">Senyap</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+    video1.preload = "auto";
+    video2.preload = "auto";
 
-        <!-- Right Box: Language Controls -->
-        <div class="settings-box">
-            <div class="box-header-badge header-lang">
-                <span id="label-language">Bahasa</span>
-            </div>
+    video1.playsInline = true;
+    video2.playsInline = true;
 
-            <div class="lang-btn-group">
-                <button class="settings-action-btn lang-option-btn" id="btn-set-bm">
-                    <!-- Ikon Bendera Malaysia Bulat -->
-                    <span class="flag-icon flag-my"></span>
-                    <span id="text-lang-bm">Bahasa Melayu</span>
-                </button>
+    // Video mute sebab audio dimainkan berasingan
+    video1.muted = true;
+    video2.muted = true;
 
-                <button class="settings-action-btn lang-option-btn" id="btn-set-en">
-                    <!-- Ikon Bendera British/UK Bulat -->
-                    <span class="flag-icon flag-uk"></span>
-                    <span id="text-lang-en">Bahasa Inggeris</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    video1.load();
+    video2.load();
 
-    <div class="footer-logo settings-footer">
-        <div class="footer-title">FLOW WITH</div>
-        <div class="footer-subtitle">Confidence</div>
-    </div>
+    video1.addEventListener("error", () => {
+        console.error(
+            "Video 1 loading error:",
+            video1.error,
+            video1.currentSrc
+        );
+    });
 
-    <button id="back-btn">Kembali</button>
-</div>
+    video2.addEventListener("error", () => {
+        console.error(
+            "Video 2 loading error:",
+            video2.error,
+            video2.currentSrc
+        );
+    });
 
-            <div class="footer-logo settings-footer">
-                <div class="footer-title">FLOW WITH</div>
-                <div class="footer-subtitle">Confidence</div>
-            </div>
+    // ==========================================
+    // 5. START BUTTON - SCENE 1
+    // ==========================================
+    startAppBtn.addEventListener("click", async () => {
 
-            <button id="back-btn">Kembali</button>
-        </div>
-    </div>
+        startOverlay.style.display = "none";
 
-    <script src="script.js"></script>
-</body>
-</html>
+        video1.classList.add("active");
+
+        video1.pause();
+        video1.currentTime = 0;
+
+        bgMusic.play().catch(err => {
+            console.error("BGM error:", err);
+        });
+
+        try {
+            await video1.play();
+            console.log("Comp1.mp4 playing!");
+        } catch (err) {
+            console.error("Video 1 playback error:", err);
+            alert("Video pertama gagal dimainkan: " + err.message);
+        }
+    });
+
+    // ==========================================
+    // 6. VIDEO 1 ENDED
+    // ==========================================
+    video1.addEventListener("ended", () => {
+
+        video1.pause();
+        video1.classList.remove("active");
+
+        langOverlay.style.display = "flex";
+    });
+
+    // ==========================================
+    // 7. VOLUME CONTROLS
+    // ==========================================
+    function setVolume(val) {
+
+        const clampedVal = Math.max(
+            0,
+            Math.min(100, Number(val))
+        );
+
+        volumeSlider.value = clampedVal;
+        volumePercentage.textContent = clampedVal + "%";
+
+        volumeSlider.style.background =
+            `linear-gradient(
+                to right,
+                #E70B90 ${clampedVal}%,
+                #FFCCE5 ${clampedVal}%
+            )`;
+
+        bgMusic.volume = clampedVal / 100;
+    }
+
+    setVolume(volumeSlider.value);
+
+    volumeSlider.addEventListener("input", e => {
+        setVolume(e.target.value);
+    });
+
+    btnVolumeUp.addEventListener("click", () => {
+        setVolume(Number(volumeSlider.value) + 10);
+    });
+
+    btnVolumeDown.addEventListener("click", () => {
+        setVolume(Number(volumeSlider.value) - 10);
+    });
+
+    btnMute.addEventListener("click", () => {
+        setVolume(0);
+    });
+
+    // ==========================================
+    // 8. LANGUAGE SELECTION
+    // ==========================================
+    btnBm.addEventListener("click", () => {
+        startIntroScene("ms");
+    });
+
+    btnEn.addEventListener("click", () => {
+        startIntroScene("en");
+    });
+
+    // ==========================================
+    // 9. SCENE 2 - INTRO VIDEO
+    // ==========================================
+    async function startIntroScene(lang) {
+
+        selectedLang = lang;
+        updateLocalizationUI();
+
+        langOverlay.style.display = "none";
+        skipBtn.style.display = "flex";
+
+        stopIntroAudio();
+
+        const audioFile = selectedLang === "en"
+            ? "intro eng.MP3"
+            : "intro.MP3";
+
+        introAudio = new Audio(audioFile);
+
+        video2.pause();
+        video2.currentTime = 0;
+        introAudio.currentTime = 0;
+
+        video2.classList.add("active");
+
+        try {
+            await Promise.all([
+                video2.play(),
+                introAudio.play()
+            ]);
+
+            console.log("Intro video and audio playing.");
+
+        } catch (err) {
+            console.error("Intro playback error:", err);
+        }
+    }
+
+    // ==========================================
+    // 10. SCENE 2 ENDED / SKIP
+    // ==========================================
+    video2.addEventListener("ended", goToScene4);
+
+    skipBtn.addEventListener("click", goToScene4);
+
+    function stopIntroAudio() {
+
+        if (introAudio) {
+            introAudio.pause();
+            introAudio = null;
+        }
+    }
+
+    // ==========================================
+    // 11. SCENE 4
+    // ==========================================
+    function goToScene4() {
+
+        stopIntroAudio();
+
+        video2.pause();
+        video2.classList.remove("active");
+
+        skipBtn.style.display = "none";
+
+        updateLocalizationUI();
+
+        scene4Overlay.style.display = "flex";
+    }
+
+    // ==========================================
+    // 12. SETTINGS NAVIGATION
+    // ==========================================
+    settingsBtn.addEventListener("click", () => {
+
+        previousScene = "scene4";
+
+        scene4Overlay.style.display = "none";
+        settingsOverlay.style.display = "flex";
+    });
+
+    backBtn.addEventListener("click", () => {
+
+        settingsOverlay.style.display = "none";
+
+        if (previousScene === "scene4" || !previousScene) {
+            scene4Overlay.style.display = "flex";
+        }
+    });
+
+    homeBtn.addEventListener("click", () => {
+
+        settingsOverlay.style.display = "none";
+        scene4Overlay.style.display = "flex";
+    });
+
+    // ==========================================
+    // 13. SETTINGS LANGUAGE
+    // ==========================================
+    btnSetBm.addEventListener("click", () => {
+
+        selectedLang = "ms";
+        updateLocalizationUI();
+    });
+
+    btnSetEn.addEventListener("click", () => {
+
+        selectedLang = "en";
+        updateLocalizationUI();
+    });
+
+    // ==========================================
+    // 14. LOCALIZATION UI
+    // ==========================================
+    function updateLocalizationUI() {
+
+        if (selectedLang === "en") {
+
+            settingsTitle.textContent = "Setting";
+            labelAudio.textContent = "Sound";
+            labelLanguage.textContent = "Language";
+
+            textVolumeUp.textContent = "Volume Up";
+            textVolumeDown.textContent = "Volume Down";
+            textMute.textContent = "Mute";
+
+            textLangBm.textContent = "Malay";
+            textLangEn.textContent = "English";
+
+            backBtn.textContent = "Back";
+
+            btnChapter.textContent = "Chapter";
+            btnQuiz.textContent = "Quiz";
+            skipBtn.textContent = "Skip";
+
+        } else {
+
+            settingsTitle.textContent = "Tetapan";
+            labelAudio.textContent = "Audio";
+            labelLanguage.textContent = "Bahasa";
+
+            textVolumeUp.textContent = "Kuatkan";
+            textVolumeDown.textContent = "Perlahankan";
+            textMute.textContent = "Senyap";
+
+            textLangBm.textContent = "Bahasa Melayu";
+            textLangEn.textContent = "Bahasa Inggeris";
+
+            backBtn.textContent = "Kembali";
+
+            btnChapter.textContent = "Bab";
+            btnQuiz.textContent = "Kuiz";
+            skipBtn.textContent = "Langkau";
+        }
+    }
+
+    updateLocalizationUI();
+
+});
