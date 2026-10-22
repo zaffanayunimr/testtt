@@ -1,0 +1,645 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#player-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-color: #a6f2eb;
+}
+
+/* ==========================================
+   0. START SCREEN OVERLAY
+   ========================================== */
+#start-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #E1FAF8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+#start-app-btn {
+    padding: 24px 60px;
+    font-size: 2.2rem;
+    font-family: "Arial Rounded MT Bold", Arial, sans-serif;
+    font-weight: bold;
+    color: #990184;
+    background-color: #CFE1F7;
+    border: 5px solid #CC3399;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#start-app-btn:hover {
+    transform: scale(1.06);
+    background-color: #FFFFCC;
+}
+
+#start-app-btn:active {
+    transform: scale(0.98);
+}
+
+/* ==========================================
+   VIDEO LAYERS
+   ========================================== */
+.video-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 1;
+}
+
+.video-layer.active {
+    opacity: 1;
+    z-index: 2;
+}
+
+/* ==========================================
+   SCENE 2: LANGUAGE SELECTION OVERLAY
+   ========================================== */
+#language-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #E1FAF8;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    z-index: 100;
+}
+
+.lang-btn {
+    border: 6px solid #CC3399;
+    color: #E70B90;
+    padding: 28px 30px;
+    font-size: 2.5rem;
+    font-family: "Franklin Gothic Heavy", "Franklin Gothic Medium", "Arial Black", sans-serif;
+    font-weight: 900;
+    border-radius: 65px;
+    cursor: pointer;
+    width: 520px;
+    max-width: 90vw;
+    text-align: center;
+    white-space: nowrap;
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+#btn-bm {
+    background-color: #CFE1F7;
+}
+
+#btn-en {
+    background-color: #CCFFFF;
+}
+
+#btn-bm:hover,
+#btn-en:hover,
+.lang-btn:hover {
+    transform: translateY(6px);
+    background-color: #FFCCFF !important;
+    border-color: #CC3399;
+    color: #E70B90;
+}
+
+.lang-btn:active {
+    transform: translateY(9px);
+}
+
+/* Footer Logo Styling */
+.footer-logo {
+    position: absolute;
+    bottom: 35px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.footer-title {
+    color: #990184;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    font-weight: bold;
+    font-size: 1.4rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 0.9;
+}
+
+.footer-subtitle {
+    color: #DC03A0;
+    font-family: "Bell MT", "Garamond", "Georgia", serif;
+    font-style: italic;
+    font-weight: normal;
+    font-size: 2.8rem;
+    margin-top: -8px;
+    line-height: 0.9;
+}
+
+/* ==========================================
+   LANGKAU / SKIP BUTTON
+   ========================================== */
+#skip-btn {
+    display: none;
+    position: absolute;
+    top: 25px;
+    right: 35px;
+    z-index: 150;
+    width: 160px;
+    height: 52px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #FFFFCC;
+    border: 4px solid #339933;
+    color: #009966;
+    font-family: "Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif;
+    font-size: 1.4rem;
+    font-weight: bold;
+    white-space: nowrap;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#skip-btn:hover {
+    transform: translateY(4px);
+    background-color: #FFCCFF;
+    border-color: #339933;
+    color: #009966;
+}
+
+#skip-btn:active {
+    transform: translateY(6px);
+}
+
+/* ==========================================
+   SCENE 4: MAIN MENU STYLING
+   ========================================== */
+#scene4-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/bg-homepage.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+#settings-btn {
+    position: absolute;
+    top: 28px;
+    right: 42px;
+    width: 68px;
+    height: 68px;
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+    z-index: 210;
+}
+
+#settings-btn .gear-icon {
+    width: 60px;
+    height: 60px;
+    fill: #52B2EC;
+    transition: fill 0.2s ease;
+}
+
+#settings-btn:hover {
+    transform: scale(1.08) rotate(15deg);
+}
+
+#settings-btn:hover .gear-icon {
+    fill: #B033FF;
+}
+
+.menu-header {
+    text-align: center;
+    margin-bottom: 110px;
+    margin-top: -120px;
+}
+
+.menu-title {
+    color: #990184;
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    font-weight: bold;
+    font-size: 5.2rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    line-height: 0.9;
+}
+
+.menu-subtitle {
+    color: #E70B90;
+    font-family: "Bell MT", "Garamond", "Georgia", serif;
+    font-style: italic;
+    font-weight: normal;
+    font-size: 9.5rem;
+    margin-top: -20px;
+    line-height: 0.9;
+}
+
+.menu-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+}
+
+.menu-btn {
+    width: 320px;
+    height: 68px;
+    background-color: #CFE1F7;
+    border: 4px solid #CC3399;
+    color: #990184;
+    font-family: "Arial Rounded MT Bold", "Arial Rounded MT", Arial, sans-serif;
+    font-size: 2.2rem;
+    font-weight: bold;
+    border-radius: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.menu-btn:hover {
+    transform: translateY(3px);
+    background-color: #FFFFCC !important;
+    border-color: #CC3399;
+}
+
+.menu-btn:active {
+    transform: translateY(5px);
+}
+/* ==========================================
+   SCENE 5: SETTINGS OVERLAY SCREEN
+   ========================================== */
+#settings-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/Setting Page.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 40px;
+    z-index: 300;
+}
+
+#settings-title {
+    font-family: "Cooper Black", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 5rem;
+    font-weight: normal;
+    text-align: center;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+/* Home Button */
+#home-btn {
+    position: absolute;
+    bottom: 25px;
+    left: 35px;
+    width: 72px;
+    height: 72px;
+    background-color: #FFFFFF;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+    z-index: 310;
+}
+
+#home-btn:hover {
+    transform: scale(1.08);
+}
+
+#home-btn svg {
+    width: 52px;
+    height: 52px;
+    fill: #52B2EC;
+}
+
+/* Grid Utama Konten (Dibesarkan & Diberi Ruang Selesa) */
+.settings-grid {
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    align-items: stretch;
+    width: 92%;
+    max-width: 1220px;
+    margin-top: 35px;
+}
+
+/* Kotak Transparent Dengan Pink Border */
+.settings-box {
+    flex: 1;
+    position: relative;
+    background-color: transparent;
+    border: 4.5px solid #CC3399;
+    border-radius: 40px;
+    padding: 40px 25px 20px 25px; /* Extra padding untuk butang besar */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Badge Header "Audio" & "Bahasa" */
+.box-header-badge {
+    position: absolute;
+    top: -34px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    height: 65px;
+    border: 4.5px solid #CC3399;
+    border-radius: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #E70B90;
+    font-family: "Berlin Sans FB", "Arial Rounded MT Bold", sans-serif;
+    font-size: 2.6rem;
+    font-weight: normal;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.header-audio {
+    background-color: #E7F7A8;
+}
+
+.header-lang {
+    background-color: #CFE1F7;
+}
+
+/* Kawalan Audio Body */
+.audio-control-body {
+    display: flex;
+    gap: 45px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Peluncur Isipadu (Slider Vertikal) */
+.volume-slider-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+#volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 160px;
+    height: 22px;
+    background: linear-gradient(to right, #E70B90 100%, #FFCCE5 0%); /* Latar awal */
+    border-radius: 11px;
+    outline: none;
+    cursor: pointer;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    margin: 70px -60px;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #FFFFCC;
+    border: 4px solid #CC3399;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+#volume-slider::-moz-range-thumb {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #FFFFCC;
+    border: 4px solid #CC3399;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+#volume-percentage {
+    font-family: "Franklin Gothic Heavy", "Arial Black", sans-serif;
+    color: #E70B90;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+/* KUMPULAN BUTANG AUDIO (Dibesarkan) */
+.audio-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Butang Aksi Audio (Selaraskan Ikon dalam 1 Baris Lurus) */
+.settings-action-btn {
+    width: 290px;
+    height: 62px;
+    background-color: #E7F7A8;
+    border: 4.5px solid #CC3399;
+    color: #E70B90;
+    font-family: "Franklin Gothic Medium", "Arial", sans-serif;
+    font-size: 1.85rem;
+    font-weight: normal;
+    border-radius: 35px;
+    
+    /* Gunakan grid untuk menetapkan lajur ikon & teks yang tetap */
+    display: grid;
+    grid-template-columns: 50px 1fr; /* 50px khas untuk ikon, baki ruang untuk teks */
+    align-items: center;
+    padding-left: 25px; /* Jarak tetap dari tepi kiri butang */
+    
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.settings-action-btn:hover {
+    transform: translateY(2px);
+    background-color: #FFFFCC !important;
+}
+
+/* Tetapan Ikon & Teks di Dalam Butang */
+.btn-icon {
+    font-size: 1.7rem;
+    text-align: center; /* Memastikan ikon tepat di tengah-tengah lajur 50px */
+    display: block;
+}
+
+/* Memastikan teks sentiasa duduk di tengah baki ruang */
+.settings-action-btn span:not(.btn-icon) {
+    text-align: left;
+    padding-left: 10px;
+}
+
+/* KUMPULAN BUTANG BAHASA & BENDERA (Dibesarkan & Diberi Jarak) */
+.lang-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    width: 100%;
+    align-items: center;
+}
+
+/* Butang Pilihan Bahasa */
+.lang-option-btn {
+    position: relative;
+    width: 330px; /* Panjang butang ditambah supaya teks selesa */
+    height: 68px; /* Tinggi butang ditambah */
+    background-color: #CFE1F7;
+    border: 4.5px solid #CC3399;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 65px; /* Ruang lebih supaya teks tidak langgar bendera */
+    padding-right: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Teks Bahasa Dalam Butang */
+.lang-text {
+    color: #E70B90;
+    font-family: "Franklin Gothic Heavy", "Arial Black", sans-serif;
+    font-size: 1.75rem;
+    font-weight: bold;
+    white-space: nowrap; /* Menghalang teks berlipat/terhimpit */
+}
+
+/* Ikon Bendera Bulat Utama */
+.flag-icon {
+    position: absolute;
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: 4px solid #CC3399;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.18);
+    z-index: 5;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Bendera Malaysia: Fokus kanton biru + bulan & bintang tepat mengikut rujukan */
+.flag-my {
+    background-image: url('assets/flag-malaysia.png');
+    background-size: cover;          /* Memastikan imej memenuhi penuh bulatan tanpa ruang kosong */
+    background-position: 20% center;  /* Anjakkan imej sedikit ke kanan supaya bulan & bintang jelas */
+    background-color: #000066;
+}
+
+/* Bendera UK */
+.flag-uk {
+    background-image: url('assets/flag-uk.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #CC0000;
+}
+
+.btn-icon {
+    font-size: 1.6rem;
+}
+
+/* Footer Logo */
+.settings-footer {
+    bottom: 12px;
+}
+
+.settings-footer .footer-title {
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.settings-footer .footer-subtitle {
+    font-size: 2.2rem;
+    margin-top: -6px;
+}
+
+/* Back Button */
+#back-btn {
+    position: absolute;
+    bottom: 25px;
+    right: 35px;
+    width: 190px;
+    height: 56px;
+    background-color: #FFFFCC;
+    border: 4px solid #339933;
+    color: #009966;
+    font-family: "Arial Rounded MT Bold", Arial, sans-serif;
+    font-size: 1.65rem;
+    font-weight: bold;
+    border-radius: 32px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+#back-btn:hover {
+    transform: translateY(3px);
+    background-color: #FFCCFF;
+}
